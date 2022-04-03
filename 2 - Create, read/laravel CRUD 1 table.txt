@@ -1,0 +1,46 @@
+Chạy code Laravel trên mạng kéo về:
+	Copy file .env.example thành file .env
+	Chạy 
+	php artisan key:generate
+	After creating .env file and generating the key, run the code below:
+		php artisan cache:clear 
+		php artisan config:clear
+	Chạy Composer update để tải thư viện về (vendor)
+
+Cài laravel debug bar
+	composer require barryvdh/laravel-debugbar --dev
+
+Không tạo db bằng phần mêm quản lí db -> Tạo db bằng code
+	Tạo migration:
+		php artisan make:migration create_flights_table
+	Tạo db bằng code:
+		php artisan migrate
+	Thêm thuộc tính cho bảng (vd unique, default, ...)
+		search doc: database migrations
+
+Tạo model:
+	php artisan make:model Student
+
+Tạo controller, có các hàm như index, create, ...
+	Hàm index:
+		$students = Student::all() #gọi tới đối tượng student đã được nhúng và dùng hàm all để lấy ra toàn bộ sinh viên, mỗi sinh viên là 1 đối tượng
+		Trả về view để hiển thị ra view(student.index)
+
+
+Tạo thuộc tính cho class student
+	search doc: eloquent mutator
+	Tạo các thuộc tính như lấy tuổi, giới tính, họ tên; Sau đó gọi ra ở file view index
+
+Hàm route trong blade.php với tham số là name ở trong route -> trả về url tới route đã truyền trong file route
+	Khi sửa url trong file route thì không cần sửa ở các thẻ a href khác
+
+Lưu trữ học sinh vào csdl
+	Tạo form view create
+	Tạo action nhảy tới hàm store trong controller
+		Lưu hết thông tin vào đối tượng $student
+		Dùng hàm $student->save() để insert vào db
+
+
+	
+
+	
