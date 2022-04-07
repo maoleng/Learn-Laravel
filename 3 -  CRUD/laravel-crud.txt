@@ -1,0 +1,67 @@
+Laravel xem thêm sửa xóa
+
+Tạo model bằng cmd, tạo kèm các file như controller, request, policy, ...:
+	php artisan make model:Course -a
+
+Khi vào trang abc.com/courses sẽ hiện ra toàn bộ khóa học
+	Sửa route khi là /courses thì nhảy vào index() trong CourseController
+		index(): lấy ra toàn bộ khóa học và trả về view, do php mặc định trả về api -> xóa @return
+
+File view.index:
+	Format ngày bằng cách: $time->format('d/m/Y')
+	Vì file view chỉ có mục đích là hiển thị -> Tạo thuộc tính ở file model
+	Tạo bằng mutator hoặc tạo function với tên là get{tên thuộc tính}Attribute
+
+Phần create: 
+	Tạo 1 route nhảy vào hàm create 
+		Hàm create trả về view course.create
+			File view create có action nhảy tới course.store
+	Tạo thêm 1 route phương thức post nhảy vào hàm store
+	Do có nhiều route, bị lặp lại chữ courses trong URL và course trong tên của route
+		-> Route::group(['prefix' => 'courses', 'as' => 'course.'], function () { route..... }
+
+Phần store:
+	Sửa tham số tạo sẵn của hàm thành Request $rq, $rq là 1 đối tượng
+	Hàm $rq->all() trả về mảng của $rq
+	Vì khi truyền lên không cần truyền token
+		-> Loại key token đi; $rq->except(['_token']), hàm except trả về 1 mảng mới sau khi loại đi các tham số truyền vào hàm
+	Khởi tạo object course và truyền toàn bộ $rq vào $object bằng hàm $object->fill({array})
+	Khởi tạo fillable trong model
+	$object->save() để insert vào
+		Đây là cách làm theo hướng đối tượng, có thể dùng query builder:  Course::create({array})
+
+Phần destroy
+	Method phải là delete -> phần a href để nhảy tới hàm xóa bây giờ sẽ là 1 cái form
+		form: action nhảy tới route course.destroy, truyền trong hàm route id của course -> route('course.destroy', ['course' => $course->id]) và method: post
+		Trong form phải có csrf, thêm method là delete @method('DELETE')
+	Phía route delete nhận lại tham số course đã truyền lên
+		route::delete('/destroy/{course}')
+	Hàm destroy: khi tham số là $course thì nó trả về id của course, khi nó là Course $course thì nó trả về 1 đối tượng theo id course
+		Dùng query builder để xóa:
+			Course::destroy($course->id)
+			hoặc Course::where('id', $course->id)->delete()
+		Hoặc gọi tới phương thức delete() của đối tượng đó:
+			$course->delete()
+		Truyền tham số là đối tượng vào sẽ bảo mật hơn, validate hộ xem có id đó trong db hay không, ....
+		
+
+Phần edit
+	a href có action là route('course.edit', $course)
+	Phần route tương tự với delete đã làm ở trên
+	Trả về view course.edit và dữ liệu là 1 đối tượng where theo id
+	Có nhiều cách để lấy ra đối tượng:
+		Khi tham số của edit() là $course: id của course
+			$object = Course::find($course)
+			hoặc $object = Course::where('id', $course)->first()
+		Khi tham số là edit() là Course $course: đối tượng course theo id
+			$object là đối tượng luôn
+	File view.edit
+		route nhảy tới course.update, dữ liệu truyền vào là course id để bắt ở route update
+		method put
+
+Phần update
+	Route có method là put, url truyền theo id course
+	Hàm update:
+		$request là đối tượng, trong đó có các thuộc tính trong form
+			-> Dùng hàm except để loại đi những thông tin không cần thiết trong form và biến nó thành mảng
+		update db: $course->update($request->except(['_token', 'method']))
