@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Course\DestroyRequest;
 use App\Http\Requests\Course\StoreRequest;
+use App\Http\Requests\Course\UpdateRequest;
 use App\Models\Course;
 use Illuminate\Http\Request;
 
@@ -44,10 +46,11 @@ class CourseController extends Controller
      */
     public function store(StoreRequest $request)
     {
+//        $object = new Course();
+//        $object->fill($request->except(['_token']));
+//        $object->save();
+        Course::query()->create($request->validated());
 
-        $object = new Course();
-        $object->fill($request->except(['_token']));
-        $object->save();
         return redirect()->route('course.index');
     }
     /**
@@ -83,9 +86,10 @@ class CourseController extends Controller
      * @param  \App\Models\Course  $course
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Course $course)
+    public function update(UpdateRequest $request, Course $course)
     {
 //        echo json_encode($course);
+
         $course->update($request->except(['_token', '_method']));
         return redirect()->route('course.index');
     }

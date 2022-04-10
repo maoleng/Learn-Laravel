@@ -1,0 +1,55 @@
+--Search--
+	Tạo 1 form search ở view.index, name=q
+	Ở controller.index:
+		Hàm index sẽ có tham số là Request
+		Câu query lấy ra toàn bộ Course lúc này sẽ where like $search lấy từ request
+		Để không biến mất nội dung trên thanh search khi search: truyền search vào view và đổ ra ở input trong view.index
+
+--Paginate-- 
+Tra docs -> database paginate
+	Ở controller.index:
+		...->where(...)->paginate({số trang})
+		Để truyền theo request tìm kiếm khi chuyển trang:
+			$courses->appends(['q' => $search])
+	Ở view.index:
+		Để hiển thị ra nút chuyển trang:
+			{{$courses->links()}}
+
+--Validation create--
+Tra docs -> database paginate
+Tạo file request để bắt lỗi validate form 
+	 php artisan make:request Course/StoreRequest
+File StoreRequest.php:
+	Hàm authorize dùng để check login, tạm thời return true
+	Hàm rules, là những luật của từng input trong form:
+		return [
+            'name' => [
+			   'bail',
+                'string',
+                'required',
+                'unique:App\Models\Course,name'
+            ],
+            'name2' => [
+                'string',
+                'required',
+                'unique:App\Models\Course,name'
+            ],
+        ];
+	Để chỉ hiển thị ra lỗi đầu tiên mắc phải, return 'bail' ở đầu
+Để hiển thị ra lỗi, copy trên docs paste ở file view.create
+Để chạy validate, ở hàm store, tham số truyền vào là StoreRequest
+Để đổi message báo lỗi, tạo hàm messages() ở StoreRequest.php
+	messages() return ['required'=> ':attribute bắt buộc điền'], attribute là name của input
+	Để đổi attribute lúc hiển thị ra lỗi, tạo hàm attributes()
+		attributes() return ['name' => "tên"]
+Hiển thị lại value của input vừa điền
+	Đặt value của input là old({tên input})
+
+--Validated()--
+Hàm validated trả về 1 array là cặp key value trong form đã validate (validate ở hàm rule trong class StoreRequest)
+
+--Validate edit--
+Tạo UpdateRequest, gọi ở hàm update trong controller, tạo chỗ hiển thị lỗi
+Khi update trùng tên, sẽ báo lỗi do rule unique
+	-> Lên docs search unique loại trừ theo gì đó
+		Để dùng hàm đó cần truyền vào id, để lấy ra id $this->course->id
