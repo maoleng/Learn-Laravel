@@ -1,64 +1,96 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
+# Route, Controller, View
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+##Route
+- Tham số đầu tiên là `URL`
+- Tham số thứ hai là `function`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Có thể truyền tham số vào `URL` và nhận ở hàm**
+```
+Route::get('app/student/{id}', function($id) {
+    echo $id;
+});
+```
 
-## Learning Laravel
+**Tham số có thể có hoặc không**
+```
+Route::get('print/name/{name?}', function($name) {
+    echo $name;
+});
+```
+<br>
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+##Tạo `controller` bằng dòng lệnh
+```
+php artisan make:controller TestController
+```
+<br>
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+###Truyền tham số vào `URL`, và hiện ra ở File `view`
+- Tham số hàm là tham số của tham số thứ 2 trong `Route::`
+- Nội dung hàm là nội dung của hàm: tham số thứ 2 trong `Route::`
+- Ở hàm route: đổi tham số thứ 2 là gọi tới hàm `func_hello` trong class `TestController`
+- Thay vì ghi đường dẫn của class dài như này
+```
+[\App\Http\Controllers\TestController::class, 'func_hello']
+```
+- import ở đầu file
+```
+  use App\Http\Controllers\HelloController;
+  [HomeController::class, 'func_hello']
+```
 
-## Laravel Sponsors
+- Tạo file view `Hello.php` nằm trong `resources/views/`
+- Ở function `func_hello` trong class `TestController` trả về view `return view('Hello')`
+- Tuy nhiên, ở laravel khác so với mvc oop thuần, biến trong controller sẽ không gọi được qua file view
+- Vì vậy, phải truyền biến vào khi gọi file view
+```
+return view('Hello'. ['
+    'tengido' => $ten,
+    'tuoigido' => $tuoi
+']);
+```
+- Để in ra ở file view: 
+```
+Hello {{$tengido}}, you are {{$tuoigido}}
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+##Truyền gì đó vào input, và hiện ra ở File view
+- Ở file Route:
+- URL ở trang chủ -> Gọi đến hàm `formInput` ở class `HelloController`
+- FormInput: trả về view là 1 cái form
+- `FormInput.blade.php`: (.blade giúp viết code php nhanh và gọn hơn)
+- Để có thể truyền form dưới method `post` thì phải truyền kèm 1 đoạn token `csrf`
+```
+@csrf
+//hoặc
+<input type="text" value="<?php echo csrf_token() ?>" name="_token">
+```
+- Action nhảy tới url /postData
+- Ở file route thêm 1 route khi url là `/postData`: nhảy tới hàm `postData` ở class `HelloController`
+Lưu ý: Vì dữ liệu truyền lên ở phương thức `post` -> `Route::post`
+Hàm `postData` ở file `HelloController`:
+Tham số của hàm là 1 request: 
+```
+public function postData ( Request $request )
+```
+Lấy ra nội dung của dữ liệu đã truyền lên: 
+```
+$content = $request->get('keycuarequest')
+```
+Trả về 1 cái view hiển thị lên nội dung đó
+Show.blade.php: ``{{$content}}``
 
-### Premium Partners
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Plugin PHPStorm
+- HighlightBracketPair
+- Laravel
+- Laravel Query
+- Material Theme UI
+- MultiHighlight
+- Php inspections
+- Tabnine
+- Carbon now sh
