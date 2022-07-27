@@ -1,14 +1,15 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
 
-# Route, Controller, View
+# Route, Controller, View, 1 số Plugin của PHPStorm
 
+## Route
 
-##Route
 - Tham số đầu tiên là `URL`
 - Tham số thứ hai là `function`
 
 **Có thể truyền tham số vào `URL` và nhận ở hàm**
+
 ```
 Route::get('app/student/{id}', function($id) {
     echo $id;
@@ -16,6 +17,7 @@ Route::get('app/student/{id}', function($id) {
 ```
 
 **Tham số có thể có hoặc không**
+
 ```
 Route::get('print/name/{name?}', function($name) {
     echo $name;
@@ -23,13 +25,14 @@ Route::get('print/name/{name?}', function($name) {
 ```
 <br>
 
-##Tạo `controller` bằng dòng lệnh
+## Tạo `controller` bằng dòng lệnh
+
 ```
 php artisan make:controller TestController
 ```
 <br>
 
-###Truyền tham số vào `URL`, và hiện ra ở File `view`
+### Truyền tham số vào `URL`, và hiện ra ở File `view`
 - Tham số hàm là tham số của tham số thứ 2 trong `Route::`
 - Nội dung hàm là nội dung của hàm: tham số thứ 2 trong `Route::`
 - Ở hàm route: đổi tham số thứ 2 là gọi tới hàm `func_hello` trong class `TestController`
@@ -58,7 +61,7 @@ return view('Hello'. ['
 Hello {{$tengido}}, you are {{$tuoigido}}
 ```
 
-##Truyền gì đó vào input, và hiện ra ở File view
+## Truyền gì đó vào input, và hiện ra ở File view
 - Ở file Route:
 - URL ở trang chủ -> Gọi đến hàm `formInput` ở class `HelloController`
 - FormInput: trả về view là 1 cái form
