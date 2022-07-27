@@ -1,64 +1,69 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
+# Laravel xem thêm sửa xóa
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Tạo model bằng cmd, tạo kèm các file như controller, request, policy, ...:
+- `php artisan make model:Course -a`
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Phần index
+- Sửa route khi là /courses thì nhảy vào index() trong CourseController
+- index(): lấy ra toàn bộ khóa học và trả về view
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Phần create: 
+- Tạo 1 route nhảy vào hàm create 
+- Hàm create trả về view course.create
+- File view create có action nhảy tới course.store
+- Tạo thêm 1 route phương thức post nhảy vào hàm store
+- Do có nhiều route, bị lặp lại chữ courses trong URL và course trong tên của route
+- `Route::group(['prefix' => 'courses', 'as' => 'course.'], function () { route..... }`
 
-## Learning Laravel
+## Phần store:
+- Sửa tham số tạo sẵn của hàm thành Request $rq, $rq là 1 đối tượng
+    1. Hàm $rq->all() trả về mảng của $rq
+- Vì khi truyền lên không cần truyền token
+    1. Loại key token đi; $rq->except(['_token']), hàm except trả về 1 mảng mới sau khi loại đi các tham số truyền vào hàm
+- Khởi tạo object course và truyền toàn bộ $rq vào $object bằng hàm $object->fill({array})
+- Khởi tạo fillable trong model
+- $object->save() để insert vào
+- Đây là cách làm theo hướng đối tượng (query builder), có thể dùng eloquent builder:  Course::create({array})
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Phần destroy
+- Method phải là delete -> phần a href để nhảy tới hàm xóa bây giờ sẽ là 1 cái form
+    1. form: action nhảy tới `route course.destroy`, truyền trong hàm route id của course
+`route('course.destroy', ['course' => $course->id])` và `method: post`
+    2. Trong form phải có csrf, thêm method là delete `@method('DELETE')`
+- Phía route delete nhận lại tham số course đã truyền lên
+`route::delete('/destroy/{course}')`
+- Hàm destroy: khi tham số là `$course` thì nó trả về id của course, khi nó là `Course $course` thì nó trả về 1 đối tượng theo id course
+- Dùng eloquent builder để xóa:
+```Course::destroy($course->id)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+   # hoặc 
+   Course::where('id', $course->id)->delete()
+   
+   # Hoặc gọi tới phương thức delete() của đối tượng đó:
+   $course->delete()
+   
+   # Truyền tham số là đối tượng vào sẽ bảo mật hơn, validate hộ xem có id đó trong db hay không, ....
+```
 
-## Laravel Sponsors
+## Phần edit
+- a href có action là route('course.edit', $course)
+    1. Phần route tương tự với delete đã làm ở trên
+- Trả về view course.edit và dữ liệu là 1 đối tượng where theo id
+- Có nhiều cách để lấy ra đối tượng:
+    1. Khi tham số của edit() là `$course`: id của course
+`$object = Course::find($course)` hoặc `$object = Course::where('id', $course)->first()`
+    2. Khi tham số là edit() là `Course $course`: đối tượng course theo id
+`$object là đối tượng luôn`
+- File view.edit
+    1. route nhảy tới course.update, dữ liệu truyền vào là course id để bắt ở route update
+    2. method put
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Phần update
+- Route có method là put, url truyền theo id course
+- Hàm update:
+1. $request là đối tượng, trong đó có các thuộc tính trong form
+2. Dùng hàm except để loại đi những thông tin không cần thiết trong form và biến nó thành mảng
+3. update db: `$course->update($request->except(['_token', 'method']))`
