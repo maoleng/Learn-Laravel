@@ -4,3 +4,4 @@
 - [Clean Code](https://github.com/nguyentranchung/clean-code-php)
 - [Code laravel sao cho chuẩn](https://chungnguyen.xyz/posts/code-laravel-lam-sao-cho-chuan)
 - [Laravel best practices](https://github.com/alexeymezenin/laravel-best-practices)
+- [API Document Laravel](https://laravel.com/api/9.x/)
