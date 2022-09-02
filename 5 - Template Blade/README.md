@@ -15,6 +15,9 @@
 - Ở file view khác, để sử dụng layout đó
 	- Kế thừa layout đó: `@extends('layout.master')`
 	- Nhúng từ đâu tới đâu: `@section('tengido')`  ...  `@endsection`
+- Muốn chèn đoạn css hoặc javascript
+    - `@stack` ở trong file master
+    - `@push` và `@endpush` trong file kế thừa bởi file master
 
 ## Phân trang sử dụng boostrap
 - Kích hoạt sử dụng boostrap, sau khi kích hoạt, có thể sử dụng các class của boostrap
